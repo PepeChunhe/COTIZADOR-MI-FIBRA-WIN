@@ -14,10 +14,6 @@ import urllib.parse
 # Configuración de la página web
 st.set_page_config(page_title="Cotizador de Fibra", page_icon="⚡", layout="centered")
 
-st.title("⚡ Cotizador de Planes de Internet")
-st.markdown("Selecciona los filtros para generar la cotización para tu cliente.")
-st.write("---")
-
 # Cargar los datos del archivo Excel
 @st.cache_data
 def cargar_datos():
@@ -44,6 +40,36 @@ try:
         st.session_state["operador"] = operadores[0]
         
     operador_sel = st.selectbox("1. Seleccionar Operador:", operadores, key="operador")
+
+    # --- CAMBIO DINÁMICO DE COLOR DE FONDO ---
+    # Colores suaves/pasteles para mantener una excelente legibilidad del texto negro
+    if "WIN" in operador_sel.upper():
+        st.markdown(
+            """
+            <style>
+            .stApp {
+                background-color: #FFE6CC; /* Anaranjado Pastel */
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+    elif "MI FIBRA" in operador_sel.upper():
+        st.markdown(
+            """
+            <style>
+            .stApp {
+                background-color: #FCE4EC; /* Fucsia / Rosado Suave */
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+    # Título y descripción (se colocan aquí para que el fondo aplique correctamente desde el inicio)
+    st.title("⚡ Cotizador de Planes de Internet")
+    st.markdown("Selecciona los filtros para generar la cotización para tu cliente.")
+    st.write("---")
 
     if operador_sel != " Seleccionar...":
         df_filtrado = df_original[df_original["OPERADOR"] == operador_sel]
@@ -107,7 +133,6 @@ try:
                         # --- GENERACIÓN DEL MENSAJE Y BOTÓN DE WHATSAPP ---
                         st.write("---")
                         
-                        # Estructura limpia para el chat de WhatsApp
                         mensaje_texto = (
                             f"🚀 *¡HOLA! AQUÍ TIENES TU COTIZACIÓN EXCLUSIVA!* 🚀\n\n"
                             f"📌 *Operador:* {operador_sel}\n"
@@ -123,11 +148,9 @@ try:
                             f"¿Te gustaría que agendemos tu instalación hoy mismo? 😊"
                         )
                         
-                        # Codificación URL para que WhatsApp entienda los espacios y saltos de línea
                         mensaje_codificado = urllib.parse.quote(mensaje_texto)
                         enlace_whatsapp = f"https://wa.me/?text={mensaje_codificado}"
                         
-                        # Botón llamativo e interactivo para enviar a WhatsApp
                         st.link_button("📲 Enviar Cotización por WhatsApp", enlace_whatsapp, type="primary", use_container_width=True)
                     else:
                         st.warning("No se encontró una combinación exacta para los filtros seleccionados.")
